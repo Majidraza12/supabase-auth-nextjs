@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import AuthButton from "./AuthButton";
+import AuthButton from "./AuthButton";  
+import { forgotPassword } from "@/actions/auth";
 
 const ForgotPassword = () => {
   const [error, setError] = useState<string | null>(null);
@@ -9,7 +10,14 @@ const ForgotPassword = () => {
     event.preventDefault();
     setLoading(true);
     setError(null);
-
+    const formData = new FormData(event.target as HTMLFormElement);
+    // const email = formData.get("email") as string;
+    const result = await forgotPassword(formData);
+    if (result.status === "Success") {
+      alert("Password reset email sent");
+    } else {
+      setError(result.status);
+    }
     setLoading(false);
   };
   return (

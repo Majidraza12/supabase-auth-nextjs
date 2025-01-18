@@ -1,19 +1,34 @@
 "use client";
 import React, { useState } from "react";
 import AuthButton from "./AuthButton";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { signUp } from "@/actions/auth";
 
 const SignUpForm = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  // const router = useRouter();
+  const router = useRouter();
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
     setError(null);
 
+    const formData = new FormData(event.currentTarget);
+    const result = await signUp(formData);
+
+    console.log("SignUp Result:", result); // Debugging log
+
+    if (result.status === "Success") {
+      console.log("Redirecting to login...");
+      router.push("/login"); // Redirect to login page after successful signup
+    } else {
+      setError(result.status);
+    }
+
     setLoading(false);
   };
+
   return (
     <div>
       <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
@@ -56,7 +71,7 @@ const SignUpForm = () => {
         <div className="mt-4">
           <AuthButton type="Sign up" loading={loading} />
         </div>
-        {error && <p className="text-red-500">{error}</p>}
+        {error && <p className="text-red-500 text-bold">{error}</p>}
       </form>
     </div>
   );

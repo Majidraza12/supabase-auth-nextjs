@@ -1,16 +1,30 @@
 "use client";
 import React, { useState } from "react";
 import AuthButton from "./AuthButton";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { signIn } from "@/actions/auth";
 
 const LoginForm = () => {
   const [error, setError] = useState<string | null>(null);
-  // const router = useRouter();
+  const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
     setError(null);
+    const formData = new FormData(event.currentTarget);
+    const result = await signIn(formData);
+
+    if (result.status === "Success") {
+      router.push("/");
+    } else {
+      if (result.status === "Email not confirmed") {
+        setError("Verify your email address first !");
+      } else {
+        setError(result.status);
+      }
+      console.log("Login Result:", result); // Debugging log
+    }
 
     setLoading(false);
   };

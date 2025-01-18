@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
 
 export default function ClientComponent() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -8,10 +9,12 @@ export default function ClientComponent() {
 
   useEffect(() => {
     async function getUser() {
-      setUser(null);
+      const supabase = await createClient();      
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
     }
-    getUser();
+    getUser();  
   }, []);
 
-  return <h2>{user?.email}</h2>;
+  return <h2>{`Hello ${user?.email}` || "No user"}</h2>;
 }
